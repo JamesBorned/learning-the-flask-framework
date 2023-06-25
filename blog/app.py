@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
 
 app = Flask(__name__)
@@ -26,7 +26,6 @@ def index():
 @app.route('/<int:post_id>')
 def get_post(post_id):
     conn = get_db_connection()
-    conn.execute('INSERT INTO posts (title, content) VALUES ("Random title", "Random text")')
     post = conn.execute('SELECT * FROM posts WHERE id = ?', (post_id,)).fetchone()
     conn.close()
     return render_template('post.html', post=post)
@@ -34,6 +33,21 @@ def get_post(post_id):
 @app.before_first_request
 def before_first_request():
     init_db()
+
+@app.route('/new', methods=['GET', 'POST'])
+def new_post():
+    if request.method == 'POST':
+        title = request.form['title']
+        content = request.form['content']
+        
+        conn = get_db_connection()
+        conn.execute('INSERT INTO posts (title, content) VALUES (?, ?)', (title, content))
+        conn.commit()
+        conn.close()
+        
+        return redirect(url_for('index'))
+    
+    return render_template('add_post.html')
 
 if __name__ == '__main__':
     app.run()
