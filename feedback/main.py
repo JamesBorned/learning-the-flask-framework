@@ -27,6 +27,9 @@ def contact():
 
     return render_template('contact.html', title="Обратная связь", menu=menu)
 
+@app.errorhandler(404) # декоратор
+def pageNotFound(error):
+    return render_template('page404.html', title="Страница не найдена", menu=menu), 404
 
 @app.route("/profile/<path:username>")  # int, float, path
 def profile(username):
