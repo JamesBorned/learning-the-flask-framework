@@ -1,6 +1,7 @@
 import sqlite3
 import os
 from flask import Flask, render_template, request, g
+from FDataBase import FDataBase
 
 # конфигурация
 DATABASE = '/tmp/flsite.db'
@@ -35,11 +36,22 @@ def get_db():
 @app.route("/")
 def index():
     db = get_db() # установление соединения с бд
-    return render_template('index.html', menu = [])
+    dbase = FDataBase(db) # экземпляр класса
+    return render_template('index.html', menu = dbase.getMenu())
+
+@app.route("/add_post", methods=["POST","GET"])
+def addPost():
+    db = get_db()
+    dbase = FDataBase(db)
+
+    if request.method == "POST":
+        if len(request)
+
+if __name__ == "__main__":
+    app.run(debug=True)
 
 @app.teardown_appcontext # уничтожение контекста приложения
 def close_db(error):
     '''Закрываем соединение с БД, если оно было установлено'''
     if hasattr(g, 'link_db'):
         g.link_db.close()
-
